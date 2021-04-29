@@ -1,0 +1,40 @@
+version: '3.1'
+services: 
+  mysqldb:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: backend_test
+    ports:
+      - 3306:3306
+    volumes: 
+      - ./db-config:/etc/mysql
+      - ./db-data:/var/lib/mysql
+      - ./db/backup/files/:/data_backup/data
+
+  app:
+    build:
+      context: ./nodejs
+      dockerfile: Dockerfile
+    image: node-mysql-app
+    depends_on:
+      - mysqldb
+    stdin_open: true
+    tty: true
+    ports:
+      - "51005:51005"
+  mongodb:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - ./mongo_data:/data/db
+    ports:
+      - "27017:27017"  
+      - "28017:28017"  
+volumes: 
+    db-config:
+    db-data:
+    mongo_data:
+    
+    
